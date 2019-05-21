@@ -3,11 +3,12 @@
 1.进行IAT_HOOK的时候只能HOOK本进程的，所以可以选择与DLL注入连用
 2.变量类型
 PULONG_PTR   --->unsigned _int64*
-ULONG_PTR    --->unsigned _int64*
+ULONG_PTR    --->unsigned _int64
 LPCTSTR      --->STR类型的const指针(unicode)
 LPCVOID      --->void类型的const指针(unicode)
 PBYTE        --->byte*
 PVOID        --->void*
+ULONG32      --->usigned int 
 https://www.cnblogs.com/goed/archive/2011/11/11/2245702.html
 -------------------------------------------------------------------------*/
 
@@ -23,12 +24,15 @@ https://www.cnblogs.com/goed/archive/2011/11/11/2245702.html
 //两个作用，第一:在Detour函数里面调用Target函数需要用到
 //第二，在卸载HOOK的时候，恢复原数据时候需要用到
 PFN_MessageBoxA OldMessageBox=NULL;
-PULONG_PTR g_PointerToIATThunk = NULL;
+#ifdef _WIN64
+	PULONG_PTR g_PointerToIATThunk = NULL;
+#else
+	PULONG32 g_PointerToIATThunk = NULL;
+#endif
 
 
 int main(int agrc, char* agrv[])
 {
-	//BOOL bIsWow64 = IsWow64();
 	MessageBox(NULL, "Before", "warning", MB_OK);
 	if (!IAT_InstallHook())
 	{
@@ -67,8 +71,14 @@ BOOL IAT_InstallHook()
 	BOOL bResult = FALSE;
 
 	HMODULE hCurExe = GetModuleHandle(NULL);   //当前模块的句柄
+#ifdef _WIN64
 	PULONG_PTR pt;                             //需要保存的IAT地址
 	ULONG_PTR OrginalAddr;                     //需要保存的IAT数值
+#else
+	PULONG32 pt;
+	ULONG32 OrginalAddr;
+#endif
+	
 
 
 	//安装HOOK
@@ -91,12 +101,25 @@ BOOL IAT_InstallHook()
 VOID IAT_UnInstallHook()
 {
 	DWORD dwOldProtect;
+	SIZE_T size = 0;
+#ifdef _WIN64
+	size = sizeof(PULONG_PTR);
+#else
+	size=sizeof(PULONG32);
+#endif
+
 	if (g_PointerToIATThunk)
 	{
-		VirtualProtect(g_PointerToIATThunk, sizeof(PULONG_PTR), PAGE_EXECUTE_READWRITE, &dwOldProtect);
+		VirtualProtect(g_PointerToIATThunk, size, PAGE_EXECUTE_READWRITE, &dwOldProtect);
+
+#ifdef _WIN64
 		*g_PointerToIATThunk = (ULONG64)OldMessageBox;
+#else
+		*g_PointerToIATThunk = (ULONG32)OldMessageBox;
+#endif
+
 		printf("[*]Uninstall--->*g_PointerToIATThunk：%p,OldMessageBox：%p", *g_PointerToIATThunk, OldMessageBox);
-		VirtualProtect(g_PointerToIATThunk, sizeof(PULONG_PTR), dwOldProtect, 0);
+		VirtualProtect(g_PointerToIATThunk, size, dwOldProtect, 0);
 	}
 }
 
@@ -107,15 +130,31 @@ BOOL InstallModuleIATHook(
 	char* szModuleName,   //待HOOK的模块名
 	char* szFuncName,     //目标函数名称
 	PVOID DetourFunc,     //Detour函数地址
+#ifdef _WIN64
 	PULONG_PTR *pThunkPointer,  //用以接收指向修改的位置的指针
 	ULONG_PTR *pOriginalFuncAddr   //用以接收原始函数地址
+#else
+	PULONG32 *pThunkPointer,
+	ULONG32  *pOriginalFuncAddr
+#endif
 	//ULONG_PRT和ULONG的关系是ULONG_PRT是为了X64兼容X32，，这些_PTR类型只是在32位应用程序上为32位宽，在64位应用程序上为64位宽的类型。就这么简单。
 )
 {
-	BOOL Status = FALSE;
 	//1.获取目标函数地址
+	BOOL Status = FALSE;
 	HMODULE hModule = LoadLibrary(szModuleName);
+
+
+#ifdef _WIN64
 	ULONG_PTR TargetFunAddr = (ULONG_PTR)GetProcAddress(hModule, szFuncName);
+	PULONG_PTR lpAddr = NULL;
+	SIZE_T size = sizeof(PULONG_PTR);
+#else
+	ULONG32  TargetFunAddr = (ULONG32)GetProcAddress(hModule, szFuncName);
+	PULONG32 lpAddr = NULL;
+	SIZE_T size = sizeof(PULONG32);
+#endif
+
 	printf("[*]Address of %s:0x%p\n", szFuncName, TargetFunAddr);
 	printf("[*]Module To Hook at Base:0x%p\n", hModToHook);
 	
@@ -145,8 +184,6 @@ BOOL InstallModuleIATHook(
 
 		//当初始化IAT后，双链变成单链，只能使用FirstThunk进行查找.根据函数地址直接判断，所以这也是需要提前知道目标函数地址的原因
 		PIMAGE_THUNK_DATA pThunkData = (PIMAGE_THUNK_DATA)((BYTE*)hModToHook + pImportDescriptor->FirstThunk);
-		PULONG_PTR lpAddr = NULL;
-		//ULONG_PTR lpAddr = NULL;
 		while (pThunkData->u1.Function)
 		{
 			/*------------------------------------
@@ -160,13 +197,18 @@ BOOL InstallModuleIATHook(
 				}u1;
 			} IMAGE_THUNK_DATA32;
 			----------------------------------*/
-			lpAddr = (ULONG_PTR*)pThunkData;     //此时IAT已经被填充成函数地址,可以使用*pThunkData作为目标函数地址
-			//lpAddr = (PULONG_PTR)pThunkData;
+
+			//此时IAT已经被填充成函数地址,可以使用*pThunkData作为目标函数地址
+#ifdef  _WIN64
+			lpAddr = (ULONG_PTR*)pThunkData;    
+#else
+			lpAddr = (ULONG32*)pThunkData;
+#endif
 			if ((*lpAddr) == TargetFunAddr)
 			{
 				printf("[*]Find target address!\n");
 				DWORD dwOldProtect = NULL;
-				if (VirtualProtect(lpAddr, sizeof(PULONG_PTR), PAGE_EXECUTE_READWRITE, &dwOldProtect))
+				if (VirtualProtect(lpAddr,size, PAGE_EXECUTE_READWRITE, &dwOldProtect))
 				{
 					if (pThunkPointer != NULL)   //保存修改内存的地址
 					{
@@ -178,10 +220,16 @@ BOOL InstallModuleIATHook(
 					}
 
 					//修改IAT数据
+#ifdef  _WIN64
 					*lpAddr = (ULONG_PTR)DetourFunc;
+#else
+					*lpAddr = (ULONG32)DetourFunc;
+#endif
+
+					
 					Status = TRUE;
-					//VirtualProtect(lpAddr, sizeof(ULONG_PTR), dwOldProtect, 0);
-					VirtualProtect(lpAddr, sizeof(PULONG_PTR), dwOldProtect, 0);
+					printf("[*]lpAddr:%p,DetourFunc:%p", *lpAddr, DetourFunc);
+					VirtualProtect(lpAddr, size, dwOldProtect, 0);
 					printf("[*]Hook ok-->NewMessageBox:%x\n", *lpAddr);
 				}
 				break;
@@ -208,8 +256,9 @@ int WINAPI My_MessageBoxA(
 	//1.你可以执行你指定的操作
 	BOOL bReturn = FALSE;
 	bReturn = OldMessageBox(NULL, "You Are Hooked", "Warning", MB_OK);
-
+	
 	//2.你可以控制API函数的返回值
+	BOOL bReturn = FALSE;
 	return bReturn;
 }
 

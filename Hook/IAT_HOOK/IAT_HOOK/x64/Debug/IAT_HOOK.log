@@ -1,9 +1,0 @@
-﻿  IAT_HOOK.cpp
-e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(73): warning C4477: “printf”: 格式字符串“%p”需要类型“void *”的参数，但可变参数 2 拥有了类型“ULONG_PTR”
-e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(91): warning C4477: “printf”: 格式字符串“%p”需要类型“void *”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(112): warning C4477: “printf”: 格式字符串“%p”需要类型“void *”的参数，但可变参数 2 拥有了类型“ULONG_PTR”
-e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(178): warning C4477: “printf”: 格式字符串“%x”需要类型“unsigned int”的参数，但可变参数 1 拥有了类型“unsigned __int64”
-  e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(178): note: 请考虑在格式字符串中使用“%llx”
-  e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(178): note: 请考虑在格式字符串中使用“%Ix”
-  e:\viusal studio\kanxue\hook\iat_hook\iat_hook\iat_hook.cpp(178): note: 请考虑在格式字符串中使用“%I64x”
-  IAT_HOOK.vcxproj -> E:\Viusal Studio\kanxue\HOOK\IAT_HOOK\x64\Debug\IAT_HOOK.exe

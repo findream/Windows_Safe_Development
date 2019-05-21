@@ -1,0 +1,9 @@
+﻿  Building 'SSDT_Hook' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
+  Stamping Debug\SSDT_Hook.inf
+  Stamping [Version] section with DriverVer=05/06/2019,9.6.19.490
+  SSDT_Hook.c
+e:\viusal studio\kanxue\hook\ssdt_hook\ssdt_hook\ssdt_hook\ssdt_hook.c(54): warning C4133: “函数”: 从“char [34]”到“PCWSTR”的类型不兼容
+e:\viusal studio\kanxue\hook\ssdt_hook\ssdt_hook\ssdt_hook\ssdt_hook.c(91): warning C4022: “memcpy”: 指针与实参 2 不匹配
+e:\viusal studio\kanxue\hook\ssdt_hook\ssdt_hook\ssdt_hook\ssdt_hook.c(55): warning C4047: “初始化”:“ULONG”与“void *”的间接级别不同
+e:\viusal studio\kanxue\hook\ssdt_hook\ssdt_hook\ssdt_hook\ssdt_hook.c(116): warning C4715: “GetSSDTFunctionIndex”: 不是所有的控件路径都返回值
+  SSDT_Hook.vcxproj -> E:\Viusal Studio\kanxue\HOOK\SSDT_Hook\SSDT_Hook\Debug\SSDT_Hook.sys

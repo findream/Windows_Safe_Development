@@ -19,8 +19,13 @@ BOOL InstallModuleIATHook(
 	char* szModuleName,   //待HOOK的模块名
 	char* szFuncName,     //目标函数名称
 	PVOID DetourFunc,     //Detour函数地址
+#ifdef _WIN64
 	PULONG_PTR *pThunkPointer,  //用以接收指向修改的位置的指针
 	ULONG_PTR *pOriginalFuncAddr   //用以接收原始函数地址
+#else
+	PULONG32 *pThunkPointer,
+	ULONG32  *pOriginalFuncAddr
+#endif
 	//ULONG_PRT和ULONG的关系是ULONG_PRT是为了X64兼容X32，，这些_PTR类型只是在32位应用程序上为32位宽，在64位应用程序上为64位宽的类型。就这么简单。
 );
 

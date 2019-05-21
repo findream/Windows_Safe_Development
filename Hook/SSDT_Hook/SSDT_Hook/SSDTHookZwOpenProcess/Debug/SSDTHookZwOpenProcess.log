@@ -1,0 +1,22 @@
+﻿  Building 'SSDTHookZwOpenProcess' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
+  Stamping Debug\SSDTHookZwOpenProcess.inf
+  Stamping [Version] section with DriverVer=05/06/2019,9.12.35.975
+  SSDT_HookZwOpenProcess.c
+  SSDTHookZwOpenProcess.vcxproj -> E:\Viusal Studio\kanxue\HOOK\SSDT_Hook\SSDT_Hook\Debug\SSDTHookZwOpenProcess.sys
+  Done Adding Additional Store
+  Successfully signed: E:\Viusal Studio\kanxue\HOOK\SSDT_Hook\SSDT_Hook\Debug\SSDTHookZwOpenProcess.sys
+  
+  .........................
+  Signability test complete.
+  
+  Errors:
+  None
+  
+  Warnings:
+  None
+  
+  Catalog generation complete.
+  E:\Viusal Studio\kanxue\HOOK\SSDT_Hook\SSDT_Hook\Debug\SSDTHookZwOpenProcess\ssdthookzwopenprocess.cat
+  Done Adding Additional Store
+  Successfully signed: E:\Viusal Studio\kanxue\HOOK\SSDT_Hook\SSDT_Hook\Debug\SSDTHookZwOpenProcess\ssdthookzwopenprocess.cat
+  

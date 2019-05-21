@@ -1,0 +1,22 @@
+﻿  Building 'IrpHook_1' with toolset 'WindowsKernelModeDriver10.0' and the 'Desktop' target platform.
+  Stamping Debug\IrpHook.inf
+  Stamping [Version] section with DriverVer=05/10/2019,8.54.8.295
+  IrpHook_1.c
+  IrpHook.vcxproj -> E:\Viusal Studio\kanxue\HOOK\IrpHook\Debug\IrpHook_1.sys
+  Done Adding Additional Store
+  Successfully signed: E:\Viusal Studio\kanxue\HOOK\IrpHook\Debug\IrpHook_1.sys
+  
+  .........................
+  Signability test complete.
+  
+  Errors:
+  None
+  
+  Warnings:
+  None
+  
+  Catalog generation complete.
+  E:\Viusal Studio\kanxue\HOOK\IrpHook\Debug\IrpHook_1\irphook.cat
+  Done Adding Additional Store
+  Successfully signed: E:\Viusal Studio\kanxue\HOOK\IrpHook\Debug\IrpHook_1\irphook.cat
+  
